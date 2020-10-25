@@ -71,6 +71,8 @@ export interface EditorProps {
         onChange: (editorState: EditorState) => void
     ): boolean;
     customStyleMap?: object;
+    handleBeforeInput?: any;
+    handleReturn?: any;
 }
 
 export class Editor extends React.Component<EditorProps> {
