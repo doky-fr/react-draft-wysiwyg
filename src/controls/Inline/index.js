@@ -56,17 +56,14 @@ export default class Inline extends Component {
     const { editorState, onChange } = this.props;
     let newState = RichUtils.toggleInlineStyle(editorState, newStyle);
     if (style === 'subscript' || style === 'superscript') {
-      const removeStyle = style === 'subscript' ? 'SUPERSCRIPT' : 'SUBSCRIPT';
-      const contentState = Modifier.removeInlineStyle(
-        newState.getCurrentContent(),
-        newState.getSelection(),
-        removeStyle
-      );
-      newState = EditorState.push(
-        newState,
-        contentState,
-        'change-inline-style'
-      );
+      const { currentStyles } = this.state;
+      const excludedStyle = style === 'subscript' ? 'superscript' : 'subscript';
+      if (currentStyles[excludedStyle]) {
+        newState = RichUtils.toggleInlineStyle(
+            newState,
+            excludedStyle.toUpperCase()
+        );
+      }
     }
     if (newState) {
       onChange(newState);
