@@ -1,5 +1,5 @@
 {
-  "name": "react-draft-wysiwyg",
+  "name": "@doky/react-draft-wysiwyg",
   "version": "1.14.5",
   "description": "A wysiwyg on top of DraftJS.",
   "main": "dist/react-draft-wysiwyg.js",
