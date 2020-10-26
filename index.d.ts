@@ -73,6 +73,10 @@ export interface EditorProps {
     customStyleMap?: object;
     handleBeforeInput?: any;
     handleReturn?: any;
+    handleKeyCommand?: any;
+    handlePastedFiles?: any;
+    handleDroppedFiles?: any;
+    handleDrop?: any;
 }
 
 export class Editor extends React.Component<EditorProps> {
