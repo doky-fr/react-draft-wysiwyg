@@ -18,9 +18,9 @@ export default class ModalHandler {
       });
     }
     if (document) {
-      document.addEventListener('click', () => { // eslint-disable-line no-undef
+      document.addEventListener('click', (event) => { // eslint-disable-line no-undef
         if (!this.editorFlag) {
-          this.closeAllModals();
+          this.closeAllModals(event);
           if (this.suggestionCallback) {
             this.suggestionCallback();
           }
@@ -30,14 +30,14 @@ export default class ModalHandler {
       });
       document.addEventListener('keydown', (event) => { // eslint-disable-line no-undef
         if (event.key === 'Escape') {
-          this.closeAllModals();
+          this.closeAllModals(event);
         }
       });
     }
   };
 
-  onEditorClick = () => {
-    this.closeModals();
+  onEditorClick = (event: Object) => {
+    this.closeModals(event);
     if (!this.suggestionFlag && this.suggestionCallback) {
       this.suggestionCallback();
     } else {
