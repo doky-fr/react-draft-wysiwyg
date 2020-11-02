@@ -30,6 +30,9 @@ export interface EditorProps {
     editorState?: EditorState;
     defaultEditorState?: EditorState;
     toolbarOnFocus?: boolean;
+    autoCapitalize?: string;
+    autoComplete?: string;
+    autoCorrect?: string;
     spellCheck?: boolean;
     stripPastedStyles?: boolean;
     toolbar?: object;
