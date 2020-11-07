@@ -74,6 +74,7 @@ export interface EditorProps {
         onChange: (editorState: EditorState) => void
     ): boolean;
     customStyleMap?: object;
+    customStyleFn?: (style: Draft.DraftInlineStyle, block: ContentBlock) => object;
     handleBeforeInput?: any;
     handleReturn?: any;
     handleKeyCommand?: any;
