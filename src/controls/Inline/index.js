@@ -52,7 +52,7 @@ export default class Inline extends Component {
   };
 
   toggleInlineStyle = style => {
-    const newStyle = style === 'monospace' ? 'CODE' : style.toUpperCase();
+    const newStyle = style.toUpperCase();
     const { editorState, onChange } = this.props;
     let newState = RichUtils.toggleInlineStyle(editorState, newStyle);
     if (style === 'subscript' || style === 'superscript') {
@@ -74,7 +74,7 @@ export default class Inline extends Component {
     if (style) {
       const st = {};
       forEach(style, (key, value) => {
-        st[key === 'CODE' ? 'monospace' : key.toLowerCase()] = value;
+        st[key.toLowerCase()] = value;
       });
       return st;
     }

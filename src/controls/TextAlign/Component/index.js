@@ -66,18 +66,6 @@ export default class TextAlign extends Component {
             alt=""
           />
         </Option>}
-        {options.indexOf('justify') >= 0 && <Option
-          value="justify"
-          className={classNames(justify.className)}
-          active={textAlignment === 'justify'}
-          onClick={onChange}
-          title={justify.title || translations['components.controls.textalign.justify']}
-        >
-          <img
-            src={justify.icon}
-            alt=""
-          />
-        </Option>}
       </div>
     );
   }
@@ -140,17 +128,6 @@ export default class TextAlign extends Component {
         >
           <img
             src={right.icon}
-            alt=""
-          />
-        </DropdownOption>}
-        {options.indexOf('justify') >= 0 && <DropdownOption
-          value="justify"
-          active={textAlignment === 'justify'}
-          className={classNames('rdw-text-align-dropdownOption', justify.className)}
-          title={justify.title || translations['components.controls.textalign.justify']}
-        >
-          <img
-            src={justify.icon}
             alt=""
           />
         </DropdownOption>}

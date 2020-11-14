@@ -35,8 +35,7 @@ export default class Inline extends Component {
                 onClick={onChange}
                 className={classNames(config[style].className)}
                 active={
-                  currentState[style] === true ||
-                  (style === 'MONOSPACE' && currentState.CODE)
+                  currentState[style] === true
                 }
                 title={config[style].title || translations[`components.controls.inline.${style}`]}
               >
@@ -87,8 +86,7 @@ export default class Inline extends Component {
                 value={style}
                 className={classNames('rdw-inline-dropdownoption', config[style].className)}
                 active={
-                  currentState[style] === true ||
-                  (style === 'MONOSPACE' && currentState.CODE)
+                  currentState[style] === true
                 }
                 title={config[style].title || translations[`components.controls.inline.${style}`]}
               >

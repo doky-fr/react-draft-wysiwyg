@@ -1,21 +1,13 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+import {convertFromRaw, convertToRaw, Editor, EditorState, getDefaultKeyBinding, RichUtils,} from 'draft-js';
 import {
-  Editor,
-  EditorState,
-  RichUtils,
-  convertToRaw,
-  convertFromRaw,
-  CompositeDecorator,
-  getDefaultKeyBinding,
-} from 'draft-js';
-import {
-  changeDepth,
-  handleNewLine,
   blockRenderMap,
-  getCustomStyleMap,
+  changeDepth,
   extractInlineStyle,
+  getCustomStyleMap,
   getSelectedBlocksType,
+  handleNewLine,
 } from 'draftjs-utils';
 import classNames from 'classnames';
 import ModalHandler from '../event-handler/modals';
@@ -23,13 +15,10 @@ import FocusHandler from '../event-handler/focus';
 import KeyDownHandler from '../event-handler/keyDown';
 import SuggestionHandler from '../event-handler/suggestions';
 import blockStyleFn from '../utils/BlockStyle';
-import { mergeRecursive } from '../utils/toolbar';
-import { hasProperty, filter } from '../utils/common';
-import { handlePastedText } from '../utils/handlePaste';
+import {mergeRecursive} from '../utils/toolbar';
+import {filter, hasProperty} from '../utils/common';
+import {handlePastedText} from '../utils/handlePaste';
 import Controls from '../controls';
-import getLinkDecorator from '../decorators/Link';
-import getMentionDecorators from '../decorators/Mention';
-import getHashtagDecorator from '../decorators/HashTag';
 import getBlockRenderFunc from '../renderer';
 import defaultToolbar from '../config/defaultToolbar';
 import localeTranslations from '../i18n';
@@ -53,12 +42,11 @@ class WysiwygEditor extends Component {
         getEditorState: this.getEditorState,
         onChange: this.onChange,
       },
-      props.customBlockRenderFunc
+      props.customBlockRenderFunc,
     );
     this.editorProps = this.filterEditorProps(props);
     this.customStyleMap = this.getStyleMap(props);
-    this.compositeDecorator = this.getCompositeDecorator(toolbar);
-    const editorState = this.createEditorState(this.compositeDecorator);
+    const editorState = this.createEditorState();
     extractInlineStyle(editorState);
     this.state = {
       editorState,
@@ -70,30 +58,26 @@ class WysiwygEditor extends Component {
   componentDidMount() {
     this.modalHandler.init(this.wrapperId);
   }
-  // todo: change decorators depending on properties recceived in componentWillReceiveProps.
 
   componentDidUpdate(prevProps) {
     if (prevProps === this.props) return;
     const newState = {};
     const { editorState, contentState } = this.props;
     if (!this.state.toolbar) {
-      const toolbar = mergeRecursive(defaultToolbar, toolbar);
-      newState.toolbar = toolbar;
+      newState.toolbar = mergeRecursive(defaultToolbar, toolbar);
     }
     if (
-      hasProperty(this.props, 'editorState') &&
-      editorState !== prevProps.editorState
+      hasProperty(this.props, 'editorState')
+      && editorState !== prevProps.editorState
     ) {
       if (editorState) {
-        newState.editorState = EditorState.set(editorState, {
-          decorator: this.compositeDecorator,
-        });
+        newState.editorState = EditorState.set(editorState, {});
       } else {
-        newState.editorState = EditorState.createEmpty(this.compositeDecorator);
+        newState.editorState = EditorState.createEmpty();
       }
     } else if (
-      hasProperty(this.props, 'contentState') &&
-      contentState !== prevProps.contentState
+      hasProperty(this.props, 'contentState')
+      && contentState !== prevProps.contentState
     ) {
       if (contentState) {
         const newEditorState = this.changeEditorState(contentState);
@@ -101,12 +85,12 @@ class WysiwygEditor extends Component {
           newState.editorState = newEditorState;
         }
       } else {
-        newState.editorState = EditorState.createEmpty(this.compositeDecorator);
+        newState.editorState = EditorState.createEmpty();
       }
     }
     if (
-      prevProps.editorState !== editorState ||
-      prevProps.contentState !== contentState
+      prevProps.editorState !== editorState
+      || prevProps.contentState !== contentState
     ) {
       extractInlineStyle(newState.editorState);
     }
@@ -121,7 +105,7 @@ class WysiwygEditor extends Component {
     });
   };
 
-  onEditorFocus = event => {
+  onEditorFocus = (event) => {
     const { onFocus } = this.props;
     this.setState({
       editorFocused: true,
@@ -136,14 +120,14 @@ class WysiwygEditor extends Component {
     this.focusHandler.onEditorMouseDown();
   };
 
-  keyBindingFn = event => {
+  keyBindingFn = (event) => {
     if (event.key === 'Tab') {
       const { onTab } = this.props;
       if (!onTab || !onTab(event)) {
         const editorState = changeDepth(
           this.state.editorState,
           event.shiftKey ? -1 : 1,
-          4
+          4,
         );
         if (editorState && editorState !== this.state.editorState) {
           this.onChange(editorState);
@@ -160,27 +144,27 @@ class WysiwygEditor extends Component {
     return getDefaultKeyBinding(event);
   };
 
-  onToolbarFocus = event => {
+  onToolbarFocus = (event) => {
     const { onFocus } = this.props;
     if (onFocus && this.focusHandler.isToolbarFocused()) {
       onFocus(event);
     }
   };
 
-  onWrapperBlur = event => {
+  onWrapperBlur = (event) => {
     const { onBlur } = this.props;
     if (onBlur && this.focusHandler.isEditorBlur(event)) {
       onBlur(event, this.getEditorState());
     }
   };
 
-  onChange = editorState => {
+  onChange = (editorState) => {
     const { readOnly, onEditorStateChange } = this.props;
     if (
-      !readOnly &&
-      !(
-        getSelectedBlocksType(editorState) === 'atomic' &&
-        editorState.getSelection().isCollapsed
+      !readOnly
+      && !(
+        getSelectedBlocksType(editorState) === 'atomic'
+        && editorState.getSelection().isCollapsed
       )
     ) {
       if (onEditorStateChange) {
@@ -194,49 +178,24 @@ class WysiwygEditor extends Component {
     }
   };
 
-  setWrapperReference = ref => {
+  setWrapperReference = (ref) => {
     this.wrapper = ref;
   };
 
-  setEditorReference = ref => {
+  setEditorReference = (ref) => {
     if (this.props.editorRef) {
       this.props.editorRef(ref);
     }
     this.editor = ref;
   };
 
-  getCompositeDecorator = toolbar => {
-    const decorators = [
-      ...this.props.customDecorators,
-      getLinkDecorator({
-        showOpenOptionOnHover: toolbar.link.showOpenOptionOnHover,
-      }),
-    ];
-    if (this.props.mention) {
-      decorators.push(
-        ...getMentionDecorators({
-          ...this.props.mention,
-          onChange: this.onChange,
-          getEditorState: this.getEditorState,
-          getSuggestions: this.getSuggestions,
-          getWrapperRef: this.getWrapperRef,
-          modalHandler: this.modalHandler,
-        })
-      );
-    }
-    if (this.props.hashtag) {
-      decorators.push(getHashtagDecorator(this.props.hashtag));
-    }
-    return new CompositeDecorator(decorators);
-  };
-
   getWrapperRef = () => this.wrapper;
 
-  getEditorState = () => this.state ? this.state.editorState : null;
+  getEditorState = () => (this.state ? this.state.editorState : null);
 
   getSuggestions = () => this.props.mention && this.props.mention.suggestions;
 
-  afterChange = editorState => {
+  afterChange = (editorState) => {
     setTimeout(() => {
       const { onChange, onContentStateChange } = this.props;
       if (onChange) {
@@ -252,94 +211,86 @@ class WysiwygEditor extends Component {
 
   isImageAlignmentEnabled = () => this.state.toolbar.image.alignmentEnabled;
 
-  createEditorState = compositeDecorator => {
+  createEditorState = () => {
     let editorState;
     if (hasProperty(this.props, 'editorState')) {
       if (this.props.editorState) {
-        editorState = EditorState.set(this.props.editorState, {
-          decorator: compositeDecorator,
-        });
+        editorState = EditorState.set(this.props.editorState, {});
       }
     } else if (hasProperty(this.props, 'defaultEditorState')) {
       if (this.props.defaultEditorState) {
-        editorState = EditorState.set(this.props.defaultEditorState, {
-          decorator: compositeDecorator,
-        });
+        editorState = EditorState.set(this.props.defaultEditorState, {});
       }
     } else if (hasProperty(this.props, 'contentState')) {
       if (this.props.contentState) {
         const contentState = convertFromRaw(this.props.contentState);
         editorState = EditorState.createWithContent(
-          contentState,
-          compositeDecorator
+          contentState
         );
         editorState = EditorState.moveSelectionToEnd(editorState);
       }
     } else if (
-      hasProperty(this.props, 'defaultContentState') ||
-      hasProperty(this.props, 'initialContentState')
+      hasProperty(this.props, 'defaultContentState')
+      || hasProperty(this.props, 'initialContentState')
     ) {
-      let contentState =
-        this.props.defaultContentState || this.props.initialContentState;
+      let contentState = this.props.defaultContentState || this.props.initialContentState;
       if (contentState) {
         contentState = convertFromRaw(contentState);
         editorState = EditorState.createWithContent(
-          contentState,
-          compositeDecorator
+          contentState
         );
         editorState = EditorState.moveSelectionToEnd(editorState);
       }
     }
     if (!editorState) {
-      editorState = EditorState.createEmpty(compositeDecorator);
+      editorState = EditorState.createEmpty();
     }
     return editorState;
   };
 
-  filterEditorProps = props =>
-    filter(props, [
-      'onChange',
-      'onEditorStateChange',
-      'onContentStateChange',
-      'initialContentState',
-      'defaultContentState',
-      'contentState',
-      'editorState',
-      'defaultEditorState',
-      'locale',
-      'localization',
-      'toolbarOnFocus',
-      'toolbar',
-      'toolbarCustomButtons',
-      'toolbarClassName',
-      'editorClassName',
-      'toolbarHidden',
-      'wrapperClassName',
-      'toolbarStyle',
-      'editorStyle',
-      'wrapperStyle',
-      'uploadCallback',
-      'onFocus',
-      'onBlur',
-      'onTab',
-      'mention',
-      'hashtag',
-      'ariaLabel',
-      'customBlockRenderFunc',
-      'customDecorators',
-      'handlePastedText',
-      'customStyleMap',
-    ]);
+  filterEditorProps = (props) => filter(props, [
+    'onChange',
+    'onEditorStateChange',
+    'onContentStateChange',
+    'initialContentState',
+    'defaultContentState',
+    'contentState',
+    'editorState',
+    'defaultEditorState',
+    'locale',
+    'localization',
+    'toolbarOnFocus',
+    'toolbar',
+    'toolbarCustomButtons',
+    'toolbarClassName',
+    'editorClassName',
+    'toolbarHidden',
+    'wrapperClassName',
+    'toolbarStyle',
+    'editorStyle',
+    'wrapperStyle',
+    'uploadCallback',
+    'onFocus',
+    'onBlur',
+    'onTab',
+    'mention',
+    'hashtag',
+    'ariaLabel',
+    'customBlockRenderFunc',
+    'customDecorators',
+    'handlePastedText',
+    'customStyleMap',
+  ]);
 
-  getStyleMap = props => ({ ...getCustomStyleMap(), ...props.customStyleMap });
+  getStyleMap = (props) => ({ ...getCustomStyleMap(), ...props.customStyleMap });
 
-  changeEditorState = contentState => {
+  changeEditorState = (contentState) => {
     const newContentState = convertFromRaw(contentState);
     let { editorState } = this.state;
     editorState = EditorState.push(
       editorState,
       newContentState,
-      'insert-characters'
+      'insert-characters',
     );
     editorState = EditorState.moveSelectionToEnd(editorState);
     return editorState;
@@ -351,7 +302,7 @@ class WysiwygEditor extends Component {
     });
   };
 
-  handleKeyCommand = command => {
+  handleKeyCommand = (command) => {
     const {
       editorState,
       toolbar: { inline },
@@ -366,7 +317,7 @@ class WysiwygEditor extends Component {
     return false;
   };
 
-  handleReturn = event => {
+  handleReturn = (event) => {
     if (SuggestionHandler.isOpen()) {
       return true;
     }
@@ -395,11 +346,11 @@ class WysiwygEditor extends Component {
     return false;
   };
 
-  preventDefault = event => {
+  preventDefault = (event) => {
     if (
-      event.target.tagName === 'INPUT' ||
-      event.target.tagName === 'LABEL' ||
-      event.target.tagName === 'TEXTAREA'
+      event.target.tagName === 'INPUT'
+      || event.target.tagName === 'LABEL'
+      || event.target.tagName === 'TEXTAREA'
     ) {
       this.focusHandler.onInputMouseDown();
     } else {
@@ -434,8 +385,7 @@ class WysiwygEditor extends Component {
         ...translations,
       },
     };
-    const toolbarShow =
-      editorFocused || this.focusHandler.isInputFocused() || !toolbarOnFocus;
+    const toolbarShow = editorFocused || this.focusHandler.isInputFocused() || !toolbarOnFocus;
     return (
       <div
         id={this.wrapperId}
@@ -465,10 +415,8 @@ class WysiwygEditor extends Component {
               }
               return <Control key={index} {...controlProps} config={config} />;
             })}
-            {toolbarCustomButtons &&
-              toolbarCustomButtons.map((button, index) =>
-                React.cloneElement(button, { key: index, ...controlProps })
-              )}
+            {toolbarCustomButtons
+              && toolbarCustomButtons.map((button, index) => React.cloneElement(button, { key: index, ...controlProps }))}
           </div>
         )}
         <div
@@ -559,6 +507,3 @@ WysiwygEditor.defaultProps = {
 };
 
 export default WysiwygEditor;
-
-// todo: evaluate draftjs-utils to move some methods here
-// todo: move color near font-family

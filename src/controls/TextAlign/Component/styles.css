@@ -22,9 +22,6 @@
 .rdw-center-aligned-block {
   text-align: center !important;
 }
-.rdw-justify-aligned-block {
-  text-align: justify !important;
-}
 .rdw-right-aligned-block > div {
   display: inline-block;
 }
@@ -32,8 +29,5 @@
   display: inline-block;
 }
 .rdw-center-aligned-block > div {
-  display: inline-block;
-}
-.rdw-justify-aligned-block > div {
   display: inline-block;
 }
