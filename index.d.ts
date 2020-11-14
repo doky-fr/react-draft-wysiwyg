@@ -14,6 +14,8 @@ import * as Draft from 'draft-js';
 export type SyntheticKeyboardEvent = React.KeyboardEvent<{}>;
 export type SyntheticEvent = React.SyntheticEvent<{}>;
 export type RawDraftContentState = Draft.RawDraftContentState;
+export type DraftHandleValue = Draft.DraftHandleValue;
+export type DraftDragType = Draft.DraftDragType;
 
 export class EditorState extends Draft.EditorState {}
 export class ContentState extends Draft.ContentState {}
@@ -75,12 +77,12 @@ export interface EditorProps {
     ): boolean;
     customStyleMap?: object;
     customStyleFn?: (style: Draft.DraftInlineStyle, block: ContentBlock) => object;
-    handleBeforeInput?: any;
-    handleReturn?: any;
-    handleKeyCommand?: any;
-    handlePastedFiles?: any;
-    handleDroppedFiles?: any;
-    handleDrop?: any;
+    handleBeforeInput?: (chars: string, editorState: EditorState, eventTimeStamp: number) => DraftHandleValue;
+    handleReturn?: (event: SyntheticKeyboardEvent, editorState: EditorState) => DraftHandleValue;
+    handleKeyCommand?: (command: string, editorState: EditorState, eventTimeStamp: number) => DraftHandleValue;
+    handlePastedFiles?: (files: any) => DraftHandleValue;
+    handleDroppedFiles?: (selection: SelectionState, files: any) => DraftHandleValue;
+    handleDrop?: (selection: SelectionState, dataTransfer: any, isInternal: DraftDragType) => DraftHandleValue;
 }
 
 export class Editor extends React.Component<EditorProps> {
